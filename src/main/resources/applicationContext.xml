@@ -44,12 +44,12 @@
         <property name="dataSource" ref="dataSource" />
         <property name="configLocation"  value="classpath:mybatis-config.xml"/>
         <!-- according to the actual situation add more properties -->
-        <property name="typeAliasesPackage" value="com.ssm.po;com.ssm.vo"/>
+        <property name="typeAliasesPackage" value="com.device.po;com.device.vo"/>
     </bean>
     <!-- mybatis mapper(automatic scan configuration files -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 
         <!-- according to the actual situation add more properties -->
-        <property name="basePackage" value="com.ssm.mapper" />
+        <property name="basePackage" value="com.device.mapper" />
     </bean>
 </beans>

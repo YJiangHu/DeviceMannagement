@@ -154,79 +154,89 @@
 <p class="center">在用户名和密码错误时，点击登录按钮可以看到表单的摇晃效果。</p>
 <div id="wrapper" class="login-page">
     <div id="login_form" class="form">
-        <form class="register-form" action="/regist" method="post">
+        <form class="register-form">
             <input type="text" placeholder="工号" id="r_id"/>
             <input type="text" placeholder="用户名" id="r_user_name"/>
             <input type="text" placeholder="手机号" id="r_email"/>
             <input type="password" placeholder="密码" id="r_password" />
-            <button id="create">创建账户</button>
+            <button type="button" id="create">创建账户</button>
             <p class="message">已经有了一个账户? <a href="#">立刻登录</a></p>
         </form>
-        <form class="login-form" action="/login" method="post">
+        <form class="login-form">
             <input type="text" placeholder="工号" id="id"/>
             <input type="password" placeholder="密码" id="password"/>
-            <button id="login">登　录</button>
+            <button type="button" id="login">登　录</button>
             <p class="message">还没有账户? <a href="#">立刻创建</a></p>
         </form>
     </div>
 </div>
 <script src="/JQuery/jquery-3.3.1.js"></script>
 <script type="text/javascript">
-    function check_login()
-    {
-        var name=$("#id").val();
-        var pass=$("#password").val();
-        if(name=="admin" && pass=="admin")
-        {
-            alert("登录成功！");
-            $("#id").val("");
-            $("#password").val("");
 
-        }
-        else
+    function shakeForm() {
+        $("#login_form").removeClass('shake_effect');
+        setTimeout(function()
         {
-            $("#login_form").removeClass('shake_effect');
-            setTimeout(function()
-            {
-                $("#login_form").addClass('shake_effect')
-            },1);
-        }
+            $("#login_form").addClass('shake_effect')
+        },1);
     }
-    function check_register(){
-        var name = $("#r_user_name").val();
-        var pass = $("#r_password").val();
-        var email = $("r_email").val();
-        if(name!="" && pass=="" && email != "")
-        {
-            alert("注册成功！");
-            $("#id").val("");
-            $("#password").val("");
-        }
-        else
-        {
-            $("#login_form").removeClass('shake_effect');
-            setTimeout(function()
-            {
-                $("#login_form").addClass('shake_effect')
-            },1);
-        }
+    function changeForm() {
+        $('form').animate({
+            height: 'toggle',
+            opacity: 'toggle'
+        }, 'slow');
     }
+
     $(function(){
-        $("#create").click(function(){
-            check_register();
-            return false;
-        })
-        $("#login").click(function(){
-            check_login();
-            return false;
-        })
         $('.message a').click(function () {
-            $('form').animate({
-                height: 'toggle',
-                opacity: 'toggle'
-            }, 'slow');
+            changeForm();
         });
-    })
+
+        $("#login").click(function () {
+            var id = $("#id").val();
+            var password = $("#password").val();
+            $.ajax({
+                type: 'POST',
+                url: '/login',
+                data: {
+                    'id': id,
+                    'password': password
+                },
+                success: function (res) {
+                    if(res.code == 0) {
+                        console.log(res);
+                        window.location.href = "page/home.html";
+                    } else {
+                        shakeForm();
+                    }
+                }
+            });
+        });
+
+        $("#create").click(function () {
+           var adminId = $("#r_id").val();
+           var adminName = $("#r_user_name").val();
+           var adminPhone = $("#r_email").val();
+           var adminPassword = $("#r_password").val();
+           $.ajax({
+              type: 'POST',
+              url: '/register',
+              data: {
+                  'adminId': adminId,
+                  'adminName': adminName,
+                  'adminPhone': adminPhone,
+                  'adminPassword': adminPassword
+              },
+               success: function (res) {
+                   if(res.code == 0) {
+                       changeForm();
+                   } else {
+                       shakeForm();
+                   }
+               }
+           });
+        });
+    });
 
     var formData=$('#login-form').serialize();
     $.ajax({
