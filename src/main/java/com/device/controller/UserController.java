@@ -4,6 +4,7 @@ import com.device.enums.CodeMsg;
 import com.device.po.User;
 import com.device.result.Result;
 import com.device.service.UserService;
+import com.device.util.UserUtil;
 import com.device.vo.RegisterVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,6 +41,7 @@ public class UserController {
         if(!user.getAdminPassword().equals(password)) {
             return Result.error(CodeMsg.PASSWORD_ERROR);
         }
+        UserUtil.user = user;
         return Result.success(user);
     }
 
@@ -50,5 +52,11 @@ public class UserController {
             return Result.error(CodeMsg.USER_REPEAT);
         }
         return userService.addUser(registerVO) == 1 ? Result.success(registerVO.getAdminName()) : Result.<String>error(CodeMsg.USER_REPEAT);
+    }
+
+    @RequestMapping("/username")
+    @ResponseBody
+    public String getUserName() {
+        return UserUtil.user.getAdminName();
     }
 }

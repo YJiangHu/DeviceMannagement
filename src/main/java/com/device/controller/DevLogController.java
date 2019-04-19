@@ -29,8 +29,7 @@ public class DevLogController {
     }
 
     @InitBinder
-    protected void initBinder(WebDataBinder binder)
-    {
+    protected void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));

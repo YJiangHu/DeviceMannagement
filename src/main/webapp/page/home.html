@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>layout 后台大布局 - Layui</title>
   <link rel="stylesheet" href="../lay/layui/css/layui.css">
+  <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -84,11 +85,23 @@
 </div>
 <script src="../lay/layui/layui.js"></script>
 <script>
+  $(function () {
+    $.ajax({
+      type: "GET",
+      url: "/username",
+      success: function (name) {
+        console.log(name);
+        $("#nickname").text(name);
+      }
+    });
+
+  });
 //JavaScript代码区域
 layui.use('element', function(){
   var element = layui.element;
   
 });
+
 </script>
 </body>
 </html>
