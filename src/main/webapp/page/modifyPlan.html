@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>设备管理系统</title>
+    <link rel="stylesheet" href="../lay/layui/css/layui.css">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../lay/layer/layer.js"></script>
+    <script src="../lay/layui/layui.js" charset="utf-8"></script>
+    <script src="../js/photoUpload.js" charset="utf-8"></script>
+    <script type="text/javascript" charset="UTF-8">
+        function parseURL(){
+            let tstr = decodeURI(window.location.href, "utf-8");
+            let index = tstr.indexOf('?')
+            let str = tstr.substring(index + 1);
+            let arr = str.split('&');
+            let result = {};
+            arr.forEach((item) => {
+                let a = item.split('=');
+
+                result[a[0]] = a[1];
+            });
+            document.getElementById("onmNo").value = result["onmNo"];
+            document.getElementById("onmDevNo").value = result["onmDevNo"];
+            document.getElementById("onmDevContent").value = result["onmDevContent"];
+            document.getElementById("onmDevWay").value = result["onmDevWay"];
+            document.getElementById("onmAql").value = result["onmAql"];
+        }
+        window.onload = function () {
+            parseURL();
+        }
+    </script>
+
+</head>
+
+<body>
+<form class="layui-form" action="" id='makeplan'>
+    <div class="layui-form-item">
+        <label class="layui-form-label">任务编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="onmNo" id="onmNo" lay-verify="onmNo" autocomplete="off" placeholder="任务编号" class="layui-input"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">设备编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="onmDevNo" id="onmDevNo" lay-verify="onmDevNo" autocomplete="off" placeholder="设备编号" class="layui-input"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">维修内容</label>
+        <div class="layui-input-block">
+            <textarea name="onmDevContent" id="onmDevContent" placeholder="维修内容" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">维修方式</label>
+        <div class="layui-input-block">
+            <textarea name="onmDevWay"  id="onmDevWay" placeholder="维修方式" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">合格标准</label>
+        <div class="layui-input-block">
+            <input type="text" name="onmAql" id="onmAql" lay-verify="title" autocomplete="off" placeholder="合格标准" class="layui-input"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">添加</button>
+            <button type="button" class="layui-btn layui-btn-primary" onclick="back()">返回</button>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    layui.use('form',function () {
+        var form = layui.form;
+        form.render();
+    });
+    function back() {
+        window.opener = null;
+        window.location.href="makeplan.html";
+    }
+
+</script>
+</body>
+</html>

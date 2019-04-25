@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.device.mapper.TaskMapper">
+    <select id="listTasks" resultMap="TaskRm">
+        SELECT
+        task_id,task_onm_id,task_onm_content,task_dev_no,task_status,task_error,task_time,task_onmer_id,dev_basic_name
+        FROM
+        task_manage,dev_basic_info
+        where
+        dev_basic_name=(
+        SELECT dev_basic_name from dev_basic_info where  task_dev_no=dev_basic_no
+        )
+    </select>
+    <resultMap id="TaskRm" type="com.device.po.Task">
+        <id column="dev_basic_name" property="taskDevName" javaType="String"></id>
+        <!--<resultMap id="listOnmersRm" type="com.device.po.Onmer">-->
+        <!--<id column="onm_user_id" property="onmerId" jdbcType="CHAR"/>-->
+        <!--</resultMap>-->
+    </resultMap>
+
+
+    <insert id="addUser" parameterType="user">
+        INSERT INTO admin_info
+        VALUES(#{adminId}, #{adminName}, #{adminPassword}, null, #{adminPhone})
+    </insert>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.device.mapper.OnmerMapper">
+    <select id="listOnmers"  parameterType="com.device.po.Onmer" resultType="Onmer">
+        SELECT * FROM onmer_info
+    </select>
+    <!--<resultMap id="listOnmersRm" type="com.device.po.Onmer">-->
+        <!--<id column="onm_user_id" property="onmerId" jdbcType="CHAR"/>-->
+    <!--</resultMap>-->
+</mapper>
