@@ -1,42 +1,59 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
+  <meta content="text/html;charset=utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>设备管理系统</title>
   <link rel="stylesheet" href="../lay/layui/css/layui.css">
+  <script src="../js/photoUpload.js" charset="utf-8"></script>
+    <script src="../js/jquery-2.1.1.min.js"></script>
     <script src="../lay/layer/layer.js"></script>
+    <script src="../lay/layui/layui.js" charset="utf-8"></script>
 </head>
   <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
   <!--   添加设备按钮弹出table-->
+
 <body>
-<script src="../js/jquery-2.1.1.min.js"></script>
+
+
 <table class="layui-hide" id="test" lay-filter="test"></table>
- 
+ <script type="text/javascript">
+     function addDev(){
+         layer.open({
+             type: 1,  //页面层
+             skin: 'layui-layer-demo', //样式类名
+             closeBtn: 1, //显示关闭按钮
+             anim: 2,
+             shadeClose: true, //开启遮罩关闭
+             area:['1000px','600px'],
+             content: $('#devlogtable')
+         });
+     }
+     // function closeForm() {
+     //     $.ajax({
+     //         type: "GET",
+     //         url: "/addDevLogs",
+     //         success: function (res) {
+     //             if (res.data == "success") {
+     //                 window.close();
+     //             }else{
+     //                 alert("添加失败")
+     //             }
+     //         }
+     //     });
+     // }
+
+ </script>
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
-    <button class="layui-btn layui-btn-sm" id="addBt" onclick="addDev()">添加设备</button>
-    <button class="layui-btn layui-btn-sm" id="deleteBt" lay-event="del">删除设备</button>
-    <button class="layui-btn layui-btn-sm" id="modifyBt" lay-even="edit">修改设备</button>
+    <button class="layui-btn layui-btn-sm" id="addBt" onClick=addDev()>添加设备</button>
   </div>
 </script>
 
-<script type="text/javascript">
-        function addDev(){
-            layer.open({
-                type: 1,  //页面层
-                skin: 'layui-layer-demo', //样式类名
-                closeBtn: 1, //不显示关闭按钮
-                anim: 2,
-                shadeClose: true, //开启遮罩关闭
-                area:['1000px','600px'],
-                content: $('#devlogtable')
-            });
-        }
-</script>
 <script type="text/html" id="barDemo">
-  <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
- <button class="layui-btn layui-btn-danger layui-btn-xs">删除</button>
+  <a class="layui-btn layui-btn-xs" lay-event="edit"  >编辑</a>
+ <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
 <script src="../lay/layui/layui.js" charset="utf-8"></script>
@@ -52,39 +69,27 @@ layui.use(['table','util'], function(){
     ,toolbar: '#toolbarDemo'
     ,title: '设备信息表'
     ,cols: [[
-      {type: 'checkbox',fixed: 'left'}
-      ,{field:'devBasicNo', title:'设备编号',unresize:true, width:130,}
-      ,{field:'devBasicName', title:'设备名称', width:130,}
+      {field:'devBasicNo', title:'设备编号',sort:true, width:130,}
+      ,{field:'devBasicName', title:'设备名称', width:130,sort:true}
       ,{field:'devBasicBelong', title:'设备归属', width:100, sort: true}
-      ,{field:'devBasicQRcode', title:'设备码', width:110}
-      ,{field:'devBasicLocation', title:'设备位置', width:110}
+      ,{field:'devBasicQRcode', title:'设备码', width:150,sort:true}
+      ,{field:'devBasicLocation', title:'设备位置', width:110,sort:true}
       ,{field:'devBasicAdminID', title:'管理员ID', width:130, sort: true}
-      ,{field:'devBasicClassify', title:'设备分类', width:100, sort: true}
+      ,{field:'devBasicClassify', title:'设备分类', width:130, sort: true,
+              templet:function(item){
+                  if (item.devBasicClassify == '0') {
+                      return "否";
+                  } else {
+                      return "是";
+                  }
+              }}
       ,{field:'devLogTime',title:'时间',width:180, sort:true,templet:function (d){
+                      if (d.devLogTime == null) {return "null";}
         return util.toDateString(d.devLogTime*1000,"yyyy-MM-dd HH:mm:ss");}}
       ,{fixed: 'right', title:'操作', toolbar:'#barDemo', width:150}
     ]]
     ,page: true
   });
-  //处理时间
-    function showTime(time){
-        var d = new Date(time);
-        d.setTime(time);
-        console.log(d);
-        var year = d.getFullYear();
-        var month = d.getMonth();
-        month ++;
-        var day = d.getDate();
-        var hours = d.getHours();
-        var minutes = d.getMinutes();
-        var seconds = d.getSeconds();
-        month = month<10?"0" + day:day;
-        hours = minutes<10?"0" + minutes:minutes;
-        seconds = seconds<10? "0" + seconds:seconds;
-        var rightTime = year+"-"+month+"-"+day+""+hours+":"+minutes+":"+seconds;
-        return rightTime;
-    }
-  
   //头工具栏事件
     table.on('toolbar(test)', function(obj){
         var checkStatus = table.checkStatus(obj.config.id);
@@ -100,135 +105,78 @@ layui.use(['table','util'], function(){
         obj.del();
         layer.close(index);
         // 服务端数据接口
+        $.ajax({
+            type: 'POST',
+            url: '/deleteDevlogs',
+            data:{id: data.devBasicNo},
+            success: function (res) {
+                alert("删除成功！");
+           }
+        });
       });
     } else if(obj.event === 'edit'){
 
-        var checkStatus = table.checkStatus("id");
-        window.location.href="modifyDev.html";
-        //服务端
-      //
-      // layer.prompt({
-      //   formType: 2
-      //   ,value: data.email
-      // }, function(value, index){
-      //   obj.update({
-      //     email: value
-      //   });
-      //   layer.close(index);
-      // });
+        window.location.href="modifyDev.html?devBasicNo=" + data.devBasicNo + "&devBasicName=" + data.devBasicName +
+                                       "&devBasicBelong=" + data.devBasicBelong + "&devBasicQRcode=" + data.devBasicQRcode + "&devBasicLocation="
+                                       + data.devBasicLocation + "&devBasicAdminID=" + data.devBasicAdminID;
     }
   });
-});
-//图片上传
-layui.use('upload', function() {
-    var $ = layui.jquery
-        , upload = layui.upload;
-    //普通图片上传
-    var uploadInst = upload.render({
-        elem: '#test1'
-        , url: '/upload/'
-        , accept:'images'
-        ,auto:false
-        ,bindAction:'#formAddBt'
-        ,size:500
-        , before: function (obj) {
-            //预读本地文件示例，不支持ie8
-            obj.preview(function (index, file, result) {
-                $('#demo1').attr('src', result); //图片链接（base64）
-            });
-        }
-        , done: function (res) {
-            //如果上传失败
-            if (res.code > 0) {
-                return layer.msg('上传失败');
+    layui.use(['form'], function(){
+        var form = layui.form
+        form.verify({
+            devNo: function (val) {
+                if(val.length < 3)
+                    return "设备编号最少3个字符";
+            },
+            devName:function (val) {
+                if(val.length < 3){
+                    return "设备名称最少3个字符";
+                }
+
+            },
+            devBeLong:function (val) {
+                if(val.length < 3 ){
+                    return "不能少于3个字符";
+                }
+
             }
-            //上传成功
-        }
-        , error: function () {
-            //演示失败状态，并实现重传
-            var demoText = $('#demoText');
-            demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
-            demoText.find('.demo-reload').on('click', function () {
-                uploadInst.upload();
-            });
-        }
+
+        });
     });
 });
 
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
-layui.use(['form'], function() {
-    var  form = layui.form;
-    //创建一个编辑器
-    // var editIndex = layedit.build('LAY_demo_editor');
 
-    //自定义验证规则
-    // form.verify({
-    // title: function(value){
-    //     if(value.length < 5){
-    //       return '标题至少得5个字符啊';
-    //     }
-    //   }
-    //   ,pass: [
-    //     /^[\S]{6,12}$/
-    //     ,'密码必须6到12位，且不能出现空格'
-    //   ]
-    //   ,content: function(value){
-    //     layedit.sync(editIndex);
-    //   }
-    // });
-
-    //监听提交
-    form.on('submit(demo1)', function (data) {
-        $.ajax({
-            type: 'POST',
-            url: '/devLogTable',
-            data: data.field,
-            success: function (res) {
-                alert("添加成功！");
-                $('this').close;
-                if (res.code == 0) {
-                    form.val("table", res.data())
-                } else {
-                    shakeForm();
-                }
-            }
-        });
-    });
-});
-</script> 
-</body>
-</html>
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-</fieldset>
-<form class="layui-form" action="" id='devlogtable' style="display:none;" lay-filter="table" enctype="multipart/form-data"
-                method="post">
+</script>
+<form class="layui-form" action="/addDevlogs" method="post" id='devlogtable' style="display:none; margin-top: 10px" lay-filter="table" enctype="multipart/form-data"  novalidate="novalidate">
     <div class="layui-form-item">
         <label class="layui-form-label">设备编号</label>
         <div class="layui-input-block">
-            <input type="text" name="devNo" lay-verify="title" autocomplete="off" placeholder="设备编号" class="layui-input">
+            <input type="text" name="devBasicNo" lay-verify="required" autocomplete="off" placeholder="设备编号" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">设备名称</label>
         <div class="layui-input-block">
-            <input type="text" name="devName" lay-verify="required" placeholder="设备名称" autocomplete="off" class="layui-input">
+            <input type="text" name="devBasicName"  placeholder="设备名称" autocomplete="off" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">设备归属</label>
         <div class="layui-input-block">
-            <input type="text" name="devBelong" lay-verify="required" placeholder="设备归属" autocomplete="off" class="layui-input">
+            <input type="text" name="devBasicBelong"  placeholder="设备归属" autocomplete="off" class="layui-input">
         </div>
     </div>
 
     <div class="layui-upload">
-        <label class="layui-form-label">设备二维码</label>
-        <button type="button" class="layui-btn" id="upBt">上传图片</button>
+        <label class="layui-form-label">设备码</label>
+
         <div class="layui-upload-list">
-            <img class="layui-upload-img" id="demo1">
-            <p id="demoText"></p>
+            <img class="layui-upload-img" id="xmTanImg" style="width: 300px; height: 300px">
+            <input name="demo1" type="file" lay-verify="required" id="xdaTanFileImg"  lay onchange="xmTanUploadImg(this)" accept="image/*" />
+            <p id="xmTanDiv"></p>
         </div>
     </div>
 
@@ -237,12 +185,12 @@ layui.use(['form'], function() {
     <div class="layui-form-item">
         <label class="layui-form-label">设备位置</label>
         <div class="layui-input-block">
-            <select name="devLocation" lay-filter="location">
+            <select name="devBasicLocation" lay-filter="aihao" >
                 <option value=""></option>
-                <option value="1号工厂" selected="">1号工厂</option>
-                <option value="2号工厂" >2号工厂</option>
-                <option value="3号工厂">3号工厂</option>
-                <option value="4号工厂">4号工厂</option>
+                <option value="0" selected="">1号工厂</option>
+                <option value="1" >2号工厂</option>
+                <option value="2">3号工厂</option>
+                <option value="3">4号工厂</option>
             </select>
         </div>
     </div>
@@ -250,20 +198,23 @@ layui.use(['form'], function() {
     <div class="layui-form-item">
         <label class="layui-form-label">管理员ID</label>
         <div class="layui-input-block">
-            <input type="text" name="adminId" lay-verify="required" placeholder="管理员ID" autocomplete="off" class="layui-input">
+            <input type="text" name="devBasicAdminID"   lay-verify="title" placeholder="管理员ID" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item" pane="">
         <label class="layui-form-label">设备分类</label>
         <div class="layui-input-block">
-            <input type="radio" name="devClassify" value="A" title="A" checked="">
-            <input type="radio" name="devClassify" value="B" title="B">
+            <input type="radio" name="devBasicClassify" value="1" title="A" checked="">
+            <input type="radio" name="devBasicClassify" value="2" title="B">
         </div>
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
-            <button class="layui-btn"  id="formAddBt" lay-submit="" lay-filter="demo1" >添加</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            <button class="layui-btn"  name="add" lay-filter="demo1" id="formAddBt" >添加</button>
+            <button type="button" class="layui-btn layui-btn-primary">重置</button>
         </div>
     </div>
 </form>
+
+</body>
+</html>
